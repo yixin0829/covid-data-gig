@@ -30,3 +30,9 @@ https://devpost.com/software/covid-data-gigs?ref_content=my-projects-tab&ref_fea
 * [Regional GDP data from U.S. Bureau of Economic Analysis
   (BEA)](https://apps.bea.gov/itable/iTable.cfm?ReqID=70&step=1&acrdn=1)
 
+## How To Use
+* Fork this project
+* Run `pip install -r requirements.txt` 
+* Run `app.py` for Plotly dashboard
+* Run `data_fetching.py` for fetching all the data you need
+* Run all notebooks and explore!
