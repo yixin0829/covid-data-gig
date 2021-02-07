@@ -1,1 +1,1 @@
-web: gunicorn app:server
+web: gunicorn covidgigfashboard:app.server
