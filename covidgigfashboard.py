@@ -2,14 +2,13 @@
 
 # Run this app with `python app.py` and
 # visit http://127.0.0.1:8050/ in your web browser.
-
+import pandas as pd
+import seaborn as sns
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 import plotly.express as px
-import pandas as pd
-import seaborn as sns
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -18,9 +17,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
 data = pd.read_csv('./COVID_NET/valid_df.csv')
-cdr_df = pd.read_csv('./COVID_NET/merged_data.csv')
-cdr_df = cdr_df[['catchment', 'date', 'Confirmed', 'Deaths', 'Recovered']]
-population_df = pd.read_csv('./US_Census/nst-est2020.csv')
+
 
 # filter for all the valid rows for states (exclude 'Entire Network')
 valid_df = data[pd.notnull(data['weekly_rate'])]
@@ -67,28 +64,6 @@ cumulativeByRace = px.box(race_df, x="date", y="cumulative_rate", color="race")
 
 weeklyByAge = px.box(age_df, x="date", y="weekly_rate", color="age_category")
 cumulativeByAge = px.box(age_df, x="date", y="cumulative_rate", color="age_category")
-
-
-
-population_df = population_df[['state', 'name', 'popestimate2020']]
-hosp_states = ["Tennessee","Utah","California","Colorado","Connecticut","Georgia","Iowa","Maryland","Michigan","Minnesota","New Mexico","New York","Ohio","Oregon"]
-
-state_pop_df = population_df.loc[population_df['name'].isin(hosp_states)]
-state_pop_df.head()
-
-# Left join (using merger)
-overall_df = overall_df.merge(state_pop_df, left_on='catchment', right_on='name')
-
-# Then drop useless columns
-overall_df = overall_df.drop(labels=['network', 'name', 'state'], axis=1)
-
-overall_df = overall_df.assign(cumuhos_count = np.ceil(overall_df['popestimate2020']/1e6 * overall_df['cumulative_rate']).astype(int))
-overall_df = overall_df.assign(weeklyhos_count = np.ceil(overall_df['popestimate2020']/1e6 * overall_df['weekly_rate']).astype(int))
-overall_df = pd.merge(overall_df, cdr_df, on=['catchment', 'date'], how='left')
-overall_df = joined.drop_duplicates()
-overall_df = overall_df.assign(hoscount_per_confirmed = overall_df['cumuhos_count']/overall_df['Confirmed'])
-overall_df = overall_df.assign(recovery_per_confirmed = overall_df['Recovered']/overall_df['Confirmed'])
-overall_df = overall_df.assign(infecting_ratio = overall_df['Confirmed']/overall_df['popestimate2020'])
 
 
 app.layout = html.Div(children=[
